@@ -2,11 +2,17 @@ FROM apache/superset:latest
 
 USER root
 
-# Instalar Superset con soporte PostgreSQL (NO solo psycopg2)
-RUN pip install --no-cache-dir apache-superset[postgres]
+# 1. Instalar herramientas necesarias para compilar drivers
+RUN apt-get update && \
+    apt-get install -y build-essential gcc libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# 2. Instalar soporte PostgreSQL para Superset
+RUN pip install --no-cache-dir psycopg2-binary
 
 EXPOSE 8088
 
+# 3. Inicialización de Superset
 CMD superset db upgrade && \
     superset fab create-admin \
       --username admin \
