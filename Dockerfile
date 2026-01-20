@@ -1,5 +1,5 @@
 FROM apache/superset:latest
-RUN pip install apache-superset[postgres]
+RUN pip install psycopg2-binary
 
 USER root
 
