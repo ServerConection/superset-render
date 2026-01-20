@@ -1,18 +1,20 @@
-FROM apache/superset:latest
+FROM python:3.10-slim
 
-USER root
-
-# 1. Instalar herramientas necesarias para compilar drivers
+# Instalar dependencias del sistema
 RUN apt-get update && \
-    apt-get install -y build-essential gcc libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y build-essential libpq-dev
 
-# 2. Instalar soporte PostgreSQL para Superset
-RUN pip install --no-cache-dir psycopg2-binary
+# Crear un directorio de trabajo
+WORKDIR /app
 
+# Instalar Superset y el driver de Postgres
+RUN pip install --upgrade pip
+RUN pip install apache-superset psycopg2-binary
+
+# Exponer puerto
 EXPOSE 8088
 
-# 3. Inicialización de Superset
+# Inicializar Superset (migraciones + admin + arranque)
 CMD superset db upgrade && \
     superset fab create-admin \
       --username admin \
